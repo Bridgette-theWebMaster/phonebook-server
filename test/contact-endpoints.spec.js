@@ -3,10 +3,10 @@ const knex = require("knex");
 const supertest = require("supertest");
 const app = require("../src/app");
 const {
-  makeContactsArray,
+  makeContactArray,
   makeMaliciousContact,
 } = require("./contacts.fixtures.js");
-const { makeUsersArray } = require("./users.fixtures");
+const { makeUsersArray } = require("./users.fixtures.js");
 
 describe("Contacts Endpoints", function () {
   let db;
@@ -27,6 +27,11 @@ describe("Contacts Endpoints", function () {
     )
   );
 
+  afterEach("cleanup", () =>
+  db.raw(
+    "TRUNCATE phonebook_users, phonebook_contacts RESTART IDENTITY CASCADE"
+  ))
+
   describe(`GET /api/contacts`, () => {
     context(`Given no contacts`, () => {
       it(`responds with 200 and an empty list`, () => {
@@ -35,7 +40,7 @@ describe("Contacts Endpoints", function () {
     });
 
     context(`Given there are contacts in the database`, () => {
-      const testContacts = makeContactsArray();
+      const testContacts = makeContactArray();
       const testUsers = makeUsersArray();
 
       beforeEach("insert contact", () => {
@@ -82,7 +87,7 @@ describe("Contacts Endpoints", function () {
     });
 
     context(`Given there are contacts in the database`, () => {
-      const testContacts = makeContactsArray();
+      const testContacts = makeContactArray();
 
       beforeEach("insert contacts", () => {
         return db
@@ -165,7 +170,7 @@ describe("Contacts Endpoints", function () {
       });
     });
     context("Given there are articles in the database", () => {
-      const testContacts = makeContactsArray();
+      const testContacts = makeContactArray();
 
       beforeEach("insert malicious contact", () => {
         return db
@@ -202,7 +207,7 @@ describe("Contacts Endpoints", function () {
     });
 
     context(`Given there are contacts in the database`, () => {
-      const testContacts = makeContactsArray();
+      const testContacts = makeContactArray();
 
       beforeEach("insert contact", () => {
         return db

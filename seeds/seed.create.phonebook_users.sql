@@ -1,9 +1,9 @@
 BEGIN;
 
-TRUNCATE contacts RESTART IDENTITY CASCADE;
+TRUNCATE users RESTART IDENTITY CASCADE;
 
-INSERT INTO contacts ( user_id, name, email, phone, street, zip, note ) 
+INSERT INTO users ( name, email, password ) 
     VALUES 
-    ('1', 'Jane', 'jane@test.com', '123-456-7890', '123 main st.', '90210', 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.');
+    ('Test', 'Test@Test.com','$2b$10$RO/x8DiOhyW2eYqYfvenlOHCW9sM9nx4pcc7q54peqyCFRZFqlTmW');
 
     COMMIT;

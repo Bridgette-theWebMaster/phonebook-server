@@ -4,14 +4,14 @@ CHECK(
 OR VALUE ~ '^\d{5}-\d{4}$'
 );
 
-CREATE TABLE phone-book (
+CREATE TABLE contacts (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id uuid
+    user_id uuid,
     name TEXT,
     email TEXT,
     phone TEXT,
     street TEXT,
-    zip
+    zip TEXT,
     note TEXT,
     CONSTRAINT fk_users
       FOREIGN KEY(user_id) 

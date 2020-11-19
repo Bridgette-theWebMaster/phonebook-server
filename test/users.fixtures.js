@@ -8,3 +8,4 @@ function makeUsersArray() {
     },
   ];
 }
+ module.exports = { makeUsersArray}

@@ -1,94 +1,65 @@
 const path = require("path");
 const express = require("express");
-const xss = require("xss");
-const ContactsService = require("./contactsServices");
+const { Pool } = require("pg");
 
-const contactsRouter = express.Router();
-const jsonParser = express.json();
+const router = express.Router()
+const pool = require('../../db')
 
-const serializeContacts = (contacts) => ({
-  id: contacts.id,
-  user_id: contacts.user_id,
-  name: contacts.name,
-  email: contacts.email,
-  phone: contacts.phone,
-  zip: contacts.zip,
-  note: contacts.note,
-});
 
-contactsRouter
-  .route("/")
-  .get((req, res, next) => {
-    const knexInstance = req.app.get("db");
-    ContactsService.getAllContacts(knexInstance)
-      .then((contacts) => {
-        res.json(contacts.map(serializeContacts));
-      })
-      .catch(next);
+
+  router.get('/', async (req, res) => {
+    try {
+      const contact = await pool.query("SELECT * FROM contacts")
+
+      res.json(contact.rows)
+    } catch (err) {
+      console.error(err.message)
+    }
   })
-  .post(jsonParser, (req, res, next) => {
-    const { user_id, name, email, phone, street, zip, note } = req.body;
-    const newContact = { name, email, phone, street, zip, note };
 
-    for (const [key, value] of Object.entries(newContact))
-      if (value == null)
-        return res.status(400).json({
-          error: { message: `Missing '${key}' in request body` },
-        });
-    newContact.user_id = user_id;
-    ContactsService.insertContact(req.app.get("db"), newContact)
-      .then((contact) => {
-        res
-          .status(201)
-          .location(path.posix.join(req.originalUrl, "/${contacts.id}"));
-      })
-      .catch(next);
-  });
-
-contactsRouter
-  .route("/:contact_id")
-  .all((req, res, next) => {
-    ContactsService.getById(req.app.get("db"), req.params.contact_id)
-      .then((contact) => {
-        if (!contact) {
-          return res.status(404).json({
-            error: { message: `Contact doesn't exist` },
-          });
-        }
-        res.contact = contact;
-        next();
-      })
-      .catch(next);
+  router.get('/:id', async (req, res) => {
+    try {
+      const {id} = req.params
+      const contact = await pool.query("SELECT * FROM contacts WHERE id = $1", [id])
+      res.json(contact.rows[0])
+    } catch (err) {
+      console.error(err.message)
+    }
   })
-  .get((req, res, next) => {
-    res.json(serializeContacts(res.contact));
-  })
-  .delete((req, res, next) => {
-    ContactsService.deleteContact(req.app.get("db"), req.params.contact_id)
-      .this((numRowAffected) => {
-        res.status(204).end();
-      })
-      .catch(next);
-  })
-  .patch(jsonParser, (req, res, next) => {
-    const { name, email, phone, street, zip, note } = req.body;
-    const contactToUpdate = { name, email, phone, street, zip, note };
 
-    const numberOfValues = Object.values(contactToUpdate).filter(Boolean)
-      .length;
-    if (numberOfValues === 0)
-      return res.status(400).json({
-        error: { message: `Nothing to update` },
-      });
-    ContactsService.updateContact(
-      req.app.get("db"),
-      req.params.contact_id,
-      contactToUpdate
-    )
-      .then((numRowAffected) => {
-        res.status(204).end();
-      })
-      .catch(next);
-  });
+  router.post('/', async (req, res) => {
+    try {
+      const { user_id, name, email, phone, street, zip, note } = req.body
+      const createContact = await pool.query("INSERT INTO contacts (user_id, name, email, phone, street, zip, note) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      [user_id, name, email, phone, street, zip, note])
 
-module.exports = contactsRouter;
+      res.json(createContact.rows[0])
+    } catch (err) {
+      console.error(err.message)
+    }
+  })
+
+  router.delete('/:id', async (req, res) => {
+    try {
+      const { id } = req.params
+      const deleteContact = await pool.query("DELETE FROM contacts WHERE id = $1", [id])
+
+      res.json("Contact was deleted")
+    } catch (err) {
+      console.error(err.message)
+    }
+  })
+
+  router.patch('/:id', async (req, res) => {
+    try {
+      const { id } = req.params
+      const { name, email, phone, street, zip, note } = req.body;
+      const updatedContact = await pool.query("UPDATE contacts SET name = ($1), email = ($2), phone = ($3), street = ($4), zip = ($5), note = ($6) WHERE id = $7",
+      [name, email, phone, street, zip, note, id])
+      res.json("Contact was updated")
+    } catch (err) {
+      console.error(err.message)
+    }
+  })
+
+module.exports = router;
