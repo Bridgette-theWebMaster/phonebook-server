@@ -2,8 +2,8 @@ BEGIN;
 
 TRUNCATE users RESTART IDENTITY CASCADE;
 
-INSERT INTO users ( name, email, password ) 
+INSERT INTO users ( name, email, password, phone, address, city, state, picture ) 
     VALUES 
-    ('Test', 'Test@Test.com','$2b$10$RO/x8DiOhyW2eYqYfvenlOHCW9sM9nx4pcc7q54peqyCFRZFqlTmW');
+    ('test', 'test@test.com','$2a$10$vLs6m4crVxHaSZFjBKDhBONLrVDhggl8qTtWC9KffrYQXE18TEOo6', 213-456-7890, '321 main st.', 'Denver', 'CO', 'https://imgur.com/a/MpSjkp9'); /*password*/
 
     COMMIT;
