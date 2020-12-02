@@ -8,9 +8,8 @@ const pool = require("../../db");
 // Get user
 router.get("/:id", authorize, async (req, res) => {
    try {
-     const { id } = req.params;
      const contact = await pool.query("SELECT * FROM users WHERE id = $1", [
-       id,
+       req.user
      ]);
      res.json(contact.rows[0]);
    } catch (err) {
@@ -21,11 +20,10 @@ router.get("/:id", authorize, async (req, res) => {
 //user edit and delete
 router.patch("/:id", authorize, async (req, res) => {
   try {
-   const { id } = req.params;
    const { name, email, phone, address, city, state } = req.body;
    const updatedContact = await pool.query(
      "UPDATE users SET name = ($1), email = ($2), phone = ($3), address =($4), city=($5), state = ($6) WHERE id = $7",
-     [name, email, phone, address, city, state, id]
+     [name, email, phone, address, city, state, req.user]
    );
    res.json("Contact was updated");
  } catch (err) {
@@ -35,9 +33,8 @@ router.patch("/:id", authorize, async (req, res) => {
 
 router.delete("/:id", authorize, async (req, res) => {
   try {
-    const { id } = req.params;
     const deleteUser = await pool.query("DELETE FROM users WHERE id = $1", [
-      id,
+      req.user
     ]);
 
     res.json("User was deleted");
