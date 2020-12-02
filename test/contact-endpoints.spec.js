@@ -21,16 +21,9 @@ describe("Contacts Endpoints", function () {
 
   after("disconnect from db", () => db.destroy());
 
-  before("clean the table", () =>
-    db.raw(
-      "TRUNCATE phonebook_users, phonebook_contacts RESTART IDENTITY CASCADE"
-    )
-  );
+  before('cleanup', () => db('phonebook').truncate())
 
-  afterEach("cleanup", () =>
-  db.raw(
-    "TRUNCATE phonebook_users, phonebook_contacts RESTART IDENTITY CASCADE"
-  ))
+  afterEach('cleanup', () => db('phonebook').truncate())
 
   describe(`GET /api/contacts`, () => {
     context(`Given no contacts`, () => {
