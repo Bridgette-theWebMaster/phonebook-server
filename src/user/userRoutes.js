@@ -5,13 +5,25 @@ const authorize = require('../middleware/authorize')
 const router = express.Router();
 const pool = require("../../db");
 
+
+// Route to search for all users
+router.get('/', authorize, async(req, res) => {
+  try {
+    const { id } = req.body
+    const users = await pool.query('SELECT * FROM users WHERE id = $1', [id])
+    res.json(users.rows[0])
+  } catch (err) {
+    console.error(err.message)
+  }
+})
+
 // Get user
 router.get("/:id", authorize, async (req, res) => {
    try {
-     const contact = await pool.query("SELECT * FROM users WHERE id = $1", [
+     const user = await pool.query("SELECT * FROM users WHERE id = $1", [
        req.user
      ]);
-     res.json(contact.rows[0]);
+     res.json(user.rows[0]);
    } catch (err) {
      console.error(err.message);
    }
