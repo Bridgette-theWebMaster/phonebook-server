@@ -4,7 +4,9 @@ const { Pool } = require("pg");
 const authorize = require('../middleware/authorize')
 const router = express.Router();
 const pool = require("../../db");
-const { ESRCH } = require("constants");
+const upload = require('../services/imageUpload')
+const singleUpload = upload.single('image')
+
 
 // route for client dashboard
 router.get("/", authorize, async (req, res) => {
@@ -38,10 +40,10 @@ router.get("/:id", authorize, async (req, res) => {
 // create a contact
 router.post("/", authorize, async (req, res) => {
   try {
-    const { name, email, phone, address, city, state, note } = req.body;
+    const { name, email, phone, address, city, state, note, picture } = req.body;
     const createContact = await pool.query(
-      "INSERT INTO contacts (user_id, name, email, phone, address, city, state, note) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-      [req.user, name, email, phone, address, city, state, note]
+      "INSERT INTO contacts (user_id, name, email, phone, address, city, state, note, picture) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
+      [req.user, name, email, phone, address, city, state, note, picture]
     );
 
     res.json(createContact.rows[0]);
@@ -49,6 +51,7 @@ router.post("/", authorize, async (req, res) => {
     console.error(err.message);
   }
 });
+
 
 // route to delete contact from contacts table
 // delete a contact
@@ -69,12 +72,14 @@ router.delete("/:id", authorize, async (req, res) => {
   }
 });
 
+
 // route to update contact
 // update contact
 router.patch("/:id", authorize, async (req, res) => {
+
   try {
     const { id } = req.params;
-    const { name, email, phone, address, city, state, note } = req.body;
+    const { name, email, phone, address, city, state, note} = req.body;
     const updatedContact = await pool.query(
       "UPDATE contacts SET name = ($1), email = ($2), phone = ($3), address =($4), city=($5), state = ($6), note = ($7) WHERE id = $8 AND user_id = $9 RETURNING *",
       [name, email, phone, address, city, state, note, id, req.user]
@@ -87,5 +92,18 @@ router.patch("/:id", authorize, async (req, res) => {
     console.error(err.message);
   }
 });
+router.put(`/:id/upload`, singleUpload, authorize, async (req, res) => {
+  try {
+     const picture = req.file.location
+     const { id } = req.params
+     const uploadedPicture = await pool.query("UPDATE contacts SET picture =($1) WHERE id = $2 AND user_id = $3 RETURNING *",
+        [picture, id, req.user])
+        res.json(picture)
+  } catch (err) {
+     console.error(err.message)
+  }
+  
+})
+  
 
 module.exports = router;

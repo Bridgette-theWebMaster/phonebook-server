@@ -8,6 +8,7 @@ const { NODE_ENV } = require("./config");
 const contactRouter = require("./contact/contactRoutes");
 const userRouter = require("./user/userRoutes")
 const authRouter = require("./user/jwtAuth")
+const uploadRouter = require("./user/imageUpload")
 
 const app = express();
 
@@ -21,10 +22,12 @@ app.use(express.json())
 app.use("/api/contacts", contactRouter);
 app.use("/auth", authRouter)
 app.use("/api/user", userRouter)
+app.use("/", uploadRouter)
 
 app.get("/", (req, res) => {
   res.send("Hello, world!");
 });
+
 
 app.use(function errorHandler(error, req, res, next) {
   let response;

@@ -6,16 +6,17 @@ const pool = require("../../db");
 const validInfo = require("../middleware/validInfo");
 const jwtGenerator = require("../utils/jwtGenerator");
 const authorize = require("../middleware/authorize");
-
+const upload = require('../services/imageUpload')
+const singleUpload = upload.single('image')
 
 
 //registering
 
-router.post('/register', validInfo, async (req, res) => {
+router.post('/register', singleUpload, validInfo, async (req, res) => {
     
-
+        const picture = req.file.location
         //destructure req.body (name, email, password)
-        const {name, email, password, phone, address, city, state, picture} = req.body;
+        const {name, email, password, phone, address, city, state} = req.body;
     try {
         //check if user exist
         const user = await pool.query("SELECT * FROM users WHERE email = $1", [

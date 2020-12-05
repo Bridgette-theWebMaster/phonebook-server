@@ -7,9 +7,9 @@ const pool = require("../../db");
 
 
 // Route to search for all users
-router.get('/', authorize, async(req, res) => {
+router.get('/search/:id', authorize, async(req, res) => {
   try {
-    const { id } = req.body
+    const { id } = req.params
     const users = await pool.query('SELECT * FROM users WHERE id = $1', [id])
     res.json(users.rows[0])
   } catch (err) {
