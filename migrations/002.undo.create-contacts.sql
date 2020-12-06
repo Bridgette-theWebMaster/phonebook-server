@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS phone-book;
+DROP TABLE IF EXISTS contacts;

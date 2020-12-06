@@ -24,7 +24,7 @@ const upload = multer({
   limits: {fileSize: 1024 * 1024 * 5},
   storage: multerS3({
     s3,
-    bucket: 'phonebook-app',
+    bucket: config.Bucket,
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: file.fieldname});
