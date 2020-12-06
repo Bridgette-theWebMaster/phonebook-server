@@ -8,7 +8,6 @@ const pool = new Pool({
   user: "oqiwieyditarhs",//"bridgette",
   port: 5432,
   password: config.jwtSecret,
-  ssl: true,
 });
 
 module.exports = pool;
