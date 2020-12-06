@@ -12,7 +12,7 @@ const singleUpload = upload.single('image')
 
 //registering
 
-router.post('/register', singleUpload, validInfo, async (req, res) => {
+router.post('/register', validInfo, async (req, res) => {
     
         //destructure req.body (name, email, password)
         const {name, email, password, phone, address, city, state} = req.body;
