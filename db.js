@@ -1,6 +1,6 @@
 const Pool = require("pg").Pool;
 require('dotenv').config()
-const config = require('../config');
+const config = require('./src/config');
 
 const pool = new Pool({
   host: "ec2-54-85-13-135.compute-1.amazonaws.com",//"localhost",
