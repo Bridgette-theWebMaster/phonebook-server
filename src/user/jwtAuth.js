@@ -14,7 +14,6 @@ const singleUpload = upload.single('image')
 
 router.post('/register', singleUpload, validInfo, async (req, res) => {
     
-        const picture = req.file.location
         //destructure req.body (name, email, password)
         const {name, email, password, phone, address, city, state} = req.body;
     try {
@@ -32,7 +31,7 @@ router.post('/register', singleUpload, validInfo, async (req, res) => {
 
         const bcryptPassword = await bcrypt.hash(password, salt);
         //enter new user in DB
-        const newUser = await pool.query("INSERT INTO users (name, email, password, phone, address, city, state, picture) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *", [name, email, bcryptPassword, phone, address, city, state, picture])
+        const newUser = await pool.query("INSERT INTO users (name, email, password, phone, address, city, state) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *", [name, email, bcryptPassword, phone, address, city, state])
         
         //generating jwt token
         const jwtToken = jwtGenerator(newUser.rows[0].id)
