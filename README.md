@@ -1,26 +1,296 @@
-# Express Boilerplate!
+# Moshi Moshi
 
-This is a boilerplate project used for starting new projects!
+## A modern phonebook
 
-## Set up
+Create an account and manage contacts seamlessly. Search for connections via user id and add to your contact list.
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+#### Live Client
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+https://moshi-moshi.vercel.app/
 
-## Scripts
+#### Client Repo
 
-Start the application `npm start`
+https://github.com/Bridgette-theWebMaster/phonebook
 
-Start nodemon for the application `npm run dev`
+## Tech
 
-Run the tests `npm test`
+### Back end
 
-## Deploying
+- Node
+- Express
+- Postgresql
+- AWS S3
+- Multer
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
+### Testing
+
+- Mocha
+- Chai
+- Supertest
+
+### Production
+
+-Heroku deployment
+
+## Authentication
+
+| Method | Endpoint    | Usage               | Returns |
+| ------ | ----------- | ------------------- | ------- |
+| POST   | /auth/login | Authenticate a user | JWT     |
+
+### `/auth/login`
+
+#### POST
+
+Endpoint for authenticating users
+
+##### Request Body
+
+| Type | Fields         | Description                                    |
+| ---- | -------------- | ---------------------------------------------- |
+| JSON | name, password | JSON containing a username and password string |
+
+##### Responses
+
+| Code | Description                                                    |
+| ---- | -------------------------------------------------------------- |
+| 200  | Receive JWT with authenticated user_name and id inside payload |
+| 400  | Missing '{user_name OR password}' in request body              |
+| 400  | Incorrect user_name or password                                |
+
+### `/auth/verify`
+
+#### POST
+
+Endpoint for authorizing users
+
+## User Registration
+
+| Method | Endpoint       | Usage             | Returns     |
+| ------ | -------------- | ----------------- | ----------- |
+| POST   | /auth/register | Register new user | User Object |
+
+### `/api/user`
+
+#### POST
+
+Endpoint for registering new users
+
+##### Request Body
+
+| Type | Fields                                             | Description                                                                    |
+| ---- | -------------------------------------------------- | ------------------------------------------------------------------------------ |
+| JSON | name, email, password, address, phone, city, state | JSON containing username, email, password, address, phone, city, state strings |
+
+##### Responses
+
+| Code | Description                                                            |
+| ---- | ---------------------------------------------------------------------- |
+| 201  | Respond with object containing user data                               |
+| 400  | Missing '{user_name OR email OR password}' in request body             |
+| 400  | Error response object containing a number of validation error messages |
+
+### `/api/user/search/:id`
+
+#### GET
+
+Endpoint for searching for a user
+
+##### Request Body
+
+| Type | Fields | Description      |
+| ---- | ------ | ---------------- |
+| JSON | id     | searched user id |
+
+##### Responses
+
+| Code | Description                              |
+| ---- | ---------------------------------------- |
+| 201  | Respond with object containing user name |
+
+| Method | Endpoint  | Usage          | Returns     |
+| ------ | --------- | -------------- | ----------- |
+| GET    | /api/user | Review account | User Object |
+
+### `/api/user/:id`
+
+#### GET
+
+Endpoint for reviewing account info
+
+##### Request Body
+
+| Type | Fields   | Description             |
+| ---- | -------- | ----------------------- |
+| JSON | jwtToken | JSON containing user_id |
+
+##### Responses
+
+| Code | Description                              |
+| ---- | ---------------------------------------- |
+| 201  | Respond with object containing user name |
+
+| Method | Endpoint  | Usage          | Returns     |
+| ------ | --------- | -------------- | ----------- |
+| GET    | /api/user | Review account | User Object |
+
+### `/api/user/:id`
+
+#### PATCH
+
+Endpoint for updating user contact info
+
+##### Request Body
+
+| Type | Fields   | Description             |
+| ---- | -------- | ----------------------- |
+| JSON | jwtToken | JSON containing user_id |
+
+##### Responses
+
+| Code | Description                   |
+| ---- | ----------------------------- |
+| 201  | Respond with updated password |
+
+### `/upload`
+
+#### PUT
+
+Endpoint for updating user photo
+
+##### Request Body
+
+| Type      | Fields   | Description                   |
+| --------- | -------- | ----------------------------- |
+| JSON      | jwtToken | JSON containing user_id       |
+| data-type | image    | image file for user to upload |
+
+##### Responses
+
+| Code | Description                |
+| ---- | -------------------------- |
+| 201  | Respond with updated photo |
+
+### `/api/contact/`
+
+#### GET
+
+Endpoint for all contacts belonging to a specific user
+
+##### Request Body
+
+| Type | Fields   | Description             |
+| ---- | -------- | ----------------------- |
+| JSON | jwtToken | JSON containing user_id |
+| JSON | id       | searched contact id     |
+
+##### Responses
+
+| Code | Description                                 |
+| ---- | ------------------------------------------- |
+| 201  | Respond with object containing contact name |
+
+| Method | Endpoint     | Usage                                     | Returns     |
+| ------ | ------------ | ----------------------------------------- | ----------- |
+| GET    | /api/contact | All contacts in databse belonging to user | User Object |
+
+### `/api/contact/:id`
+
+#### GET
+
+Endpoint for reviewing contact matching id info
+
+##### Request Body
+
+| Type | Fields   | Description             |
+| ---- | -------- | ----------------------- |
+| JSON | jwtToken | JSON containing user_id |
+| JSON | id       | searched contact id     |
+
+##### Responses
+
+| Code | Description                                 |
+| ---- | ------------------------------------------- |
+| 201  | Respond with object containing contact name |
+
+| Method | Endpoint     | Usage          | Returns     |
+| ------ | ------------ | -------------- | ----------- |
+| GET    | /api/contact | Review contact | User Object |
+
+### `/api/contact`
+
+#### POST
+
+Endpoint for registering new users
+
+##### Request Body
+
+| Type | Fields      | Description                             |
+| ---- | ----------- | --------------------------------------- |
+| JSON | name, email | JSON containing username, email strings |
+| JSON | jwtToken    | JSON containing user_id                 |
+
+##### Responses
+
+| Code | Description                                                            |
+| ---- | ---------------------------------------------------------------------- |
+| 201  | Respond with object containing user data                               |
+| 400  | Error response object containing a number of validation error messages |
+
+### `/api/contact/:id`
+
+#### DELETE
+
+Endpoint for deleting contact account
+
+##### Request Body
+
+| Type | Fields   | Description             |
+| ---- | -------- | ----------------------- |
+| JSON | jwtToken | JSON containing user_id |
+| JSON | id       | searched contact id     |
+
+##### Responses
+
+| Code | Description                  |
+| ---- | ---------------------------- |
+| 201  | Respond with account deleted |
+
+### `/api/contact/:id`
+
+#### PATCH
+
+Endpoint for updating contact info
+
+##### Request Body
+
+| Type | Fields   | Description             |
+| ---- | -------- | ----------------------- |
+| JSON | jwtToken | JSON containing user_id |
+| JSON | id       | searched contact id     |
+
+##### Responses
+
+| Code | Description                   |
+| ---- | ----------------------------- |
+| 201  | Respond with updated password |
+
+### `/:id/upload`
+
+#### PUT
+
+Endpoint for updating contact photo
+
+##### Request Body
+
+| Type      | Fields   | Description                   |
+| --------- | -------- | ----------------------------- |
+| JSON      | jwtToken | JSON containing user_id       |
+| JSON      | id       | searched contact id           |
+| data-type | image    | image file for user to upload |
+
+##### Responses
+
+| Code | Description                |
+| ---- | -------------------------- |
+| 201  | Respond with updated photo |
